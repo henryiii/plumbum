@@ -115,29 +115,35 @@ class Application(object):
             self.DESCRIPTION = inspect.getdoc(self)
 
         self.executable = executable
-        self._switches_by_name = {}
-        self._switches_by_func = {}
-        self._subcommands = {}
+        self._switches_by_name, self._switches_by_func, self._subcommands = self._get_commands()
 
-        for cls in reversed(type(self).mro()):
+
+    @classmethod
+    def _get_commands(klass):
+        """Goes throught the commands available and creates dictionaries"""
+        _switches_by_name = {}
+        _switches_by_func = {}
+        _subcommands = {}
+        for cls in reversed(klass.mro()):
             for obj in cls.__dict__.values():
                 if isinstance(obj, Subcommand):
                     if obj.name.startswith("-"):
                         raise SubcommandError("Subcommand names cannot start with '-'")
                     # it's okay for child classes to override subcommands set by their parents
-                    self._subcommands[obj.name] = obj
+                    _subcommands[obj.name] = obj
                     continue
 
                 swinfo = getattr(obj, "_switch_info", None)
                 if not swinfo:
                     continue
                 for name in swinfo.names:
-                    if name in self._unbound_switches:
+                    if name in klass._unbound_switches:
                         continue
-                    if name in self._switches_by_name and not self._switches_by_name[name].overridable:
+                    if name in _switches_by_name and not _switches_by_name[name].overridable:
                         raise SwitchError("Switch %r already defined and is not overridable" % (name,))
-                    self._switches_by_name[name] = swinfo
-                    self._switches_by_func[swinfo.func] = swinfo
+                    _switches_by_name[name] = swinfo
+                    _switches_by_func[swinfo.func] = swinfo
+        return _switches_by_name, _switches_by_func, _subcommands
 
     @property
     def root_app(self):
