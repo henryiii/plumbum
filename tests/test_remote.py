@@ -86,6 +86,8 @@ sys.stdout.flush()
 s2, _ = s.accept()
 data = s2.recv(100)
 s2.send(type(data)("hello ") + data)
+sys.stdout.write("socket done.")
+sys.stdout.flush()
 s2.close()
 s.close()
 """
@@ -212,9 +214,9 @@ class RemoteMachineTest(unittest.TestCase, BaseRemoteMachineTest):
                 s.send(six.b("world"))
                 data = s.recv(100)
                 s.close()
-                self.assertEqual(data, six.b("hello world"))
 
-            p.communicate()
+            assert p.communicate()[0] == b'socket done.'
+            self.assertEqual(data, six.b("hello world"))
 
     def test_get(self):
         with self._connect() as rem:
