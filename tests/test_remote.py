@@ -196,6 +196,7 @@ class RemoteMachineTest(unittest.TestCase, BaseRemoteMachineTest):
 
     def test_tunnel(self):
         with self._connect() as rem:
+            print(rem.python('--version'))
             p = (rem.python["-u"] << self.TUNNEL_PROG).popen()
             try:
                 port = int(p.stdout.readline().strip())
