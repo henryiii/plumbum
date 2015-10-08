@@ -81,6 +81,7 @@ class BaseRemoteMachineTest(object):
 s = socket.socket()
 s.bind(("", 0))
 s.listen(1)
+print(s.getsockname())
 sys.stdout.write("%s\n" % (s.getsockname()[1],))
 sys.stdout.flush()
 s2, _ = s.accept()
