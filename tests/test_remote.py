@@ -85,7 +85,7 @@ sys.stdout.write("socket : %s\n" % (s.getsockname()[1],))
 sys.stdout.flush()
 s2, _ = s.accept()
 data = s2.recv(100)
-s2.send("hello " + data)
+s2.send(type(data)("hello ") + data)
 s2.close()
 s.close()
 """
