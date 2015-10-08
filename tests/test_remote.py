@@ -81,8 +81,7 @@ class BaseRemoteMachineTest(object):
 s = socket.socket()
 s.bind(("", 0))
 s.listen(1)
-print(s.getsockname())
-sys.stdout.write("%s\n" % (s.getsockname()[1],))
+sys.stdout.write("socket : %s\n" % (s.getsockname()[1],))
 sys.stdout.flush()
 s2, _ = s.accept()
 data = s2.recv(100)
@@ -199,8 +198,10 @@ class RemoteMachineTest(unittest.TestCase, BaseRemoteMachineTest):
         with self._connect() as rem:
             print(rem.python('--version'))
             p = (rem.python["-u"] << self.TUNNEL_PROG).popen()
+            name = p.stdout.readline()
+            assert ":" in name.decode("ascii")
             try:
-                port = int(p.stdout.readline().strip())
+                port = int(name.decode("ascii").split(":")[-1].strip())
             except ValueError:
                 print(p.communicate())
                 raise
@@ -285,8 +286,12 @@ else:
         def test_tunnel(self):
             with self._connect() as rem:
                 p = rem.python["-c", self.TUNNEL_PROG].popen()
+
+                name = p.stdout.readline()
+                assert ":" in name
+
                 try:
-                    port = int(p.stdout.readline().strip())
+                    port = int(name.split(":")[-1].strip())
                 except ValueError:
                     print(p.communicate())
                     raise
