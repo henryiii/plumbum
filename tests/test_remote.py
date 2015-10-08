@@ -85,7 +85,7 @@ sys.stdout.write("socket : %s\n" % (s.getsockname()[1],))
 sys.stdout.flush()
 s2, _ = s.accept()
 data = s2.recv(100)
-s2.send(type(data)("hello ") + data)
+s2.send(b"hello " + data)
 sys.stdout.write("socket done.")
 sys.stdout.flush()
 s2.close()
@@ -302,7 +302,9 @@ else:
                 s.send(six.b("world"))
                 data = s.recv(100)
                 s.close()
-                self.assertEqual(data, six.b("hello world"))
+
+            print(p.communicate())
+            self.assertEqual(data, six.b("hello world"))
 
         def test_piping(self):
             with self._connect() as rem:
