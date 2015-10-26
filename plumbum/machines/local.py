@@ -293,7 +293,8 @@ class LocalMachine(BaseMachine):
             """
             
             def seperate(row):
-                return [item.strip('"') for item in row.split(',')]
+                return [item.strip('"') for item in
+                    re.split(r', (?=(?:"[^"]*?(?: [^"]*)*))|, (?=[^",]+(?:,|$))', row]
             
             tasklist = local["tasklist"]
             lines = tasklist("/V", "/FO", "CSV").splitlines()
