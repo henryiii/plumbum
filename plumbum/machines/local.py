@@ -291,16 +291,22 @@ class LocalMachine(BaseMachine):
 
             .. versionadded:: 1.3
             """
-            import csv
+            
+            def seperate(row):
+                return [item.strip('"') for item in row.split(',')
+            
             tasklist = local["tasklist"]
             lines = tasklist("/V", "/FO", "CSV").splitlines()
-            rows = csv.reader(lines)
-            header = next(rows)
+
+            header = seperate(lines[0])
+
             imgidx = header.index('Image Name')
             pididx = header.index('PID')
             statidx = header.index('Status')
             useridx = header.index('User Name')
-            for row in rows:
+
+            for row in lines[1:]:
+                row = seperate(row)
                 yield ProcInfo(int(row[pididx]), row[useridx],
                     row[statidx], row[imgidx])
     else:
